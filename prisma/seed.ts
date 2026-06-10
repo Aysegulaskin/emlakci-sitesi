@@ -1,12 +1,16 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
 import bcrypt from "bcryptjs";
 import * as dotenv from "dotenv";
 dotenv.config();
 
 import { PrismaClient } from "@prisma/client";
-import { PrismaLibSql } from "@prisma/adapter-libsql";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { Pool } from "pg";
 
-const adapter = new PrismaLibSql({ url: process.env.DATABASE_URL || "file:./dev.db" });
+const pool = new Pool({ 
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
+});
+const adapter = new PrismaPg(pool);
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const prisma = new PrismaClient({ adapter } as any);
 
@@ -230,6 +234,32 @@ async function main() {
         "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80",
       ],
       ozellikler: ["Deniz Manzarası", "Özel Havuz", "Bahçe", "Garaj"],
+    },
+    {
+      baslik: "Komple Satılık Bina — Merkezi Konumda 6 Katlı Yatırımlık",
+      aciklama: "Şehir merkezinde, ana cadde cepheli, 6 katlı komple satılık bina. Her katı bağımsız daire veya ofis olarak kullanılabilir. Mevcut kira geliri: aylık 95.000 TL",
+      fiyat: 85000000,
+      tip: "SATILIK",
+      kategori: "BINA",
+      il: "İstanbul",
+      ilce: "Kadıköy",
+      adres: "Bağdat Caddesi No:142, Kadıköy",
+      metrekare: 1450,
+      odaSayisi: null,
+      banyo: null,
+      kat: 6,
+      toplamKat: 6,
+      isitma: "Doğalgaz",
+      bina_yasi: 9,
+      lat: 40.9764,
+      lng: 29.0547,
+      aktif: true,
+      one_cikan: true,
+      resimler: [
+        "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=800&q=80",
+        "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&q=80",
+      ],
+      ozellikler: ["Asansör", "Kapalı Otopark", "Cadde Cepheli", "Kira Getirisi Var", "Depreme Dayanıklı"],
     },
   ];
 
