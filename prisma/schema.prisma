@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      String   @default("ADMIN")
+  createdAt DateTime @default(now())
+}
+
+model Ilan {
+  id          String   @id @default(cuid())
+  baslik      String
+  aciklama    String
+  fiyat       Float
+  tip         String   // SATILIK | KIRALIK
+  kategori    String   // DAIRE | VILLA | ARSA | ISYERI | BINA
+  il          String
+  ilce        String
+  adres       String
+  metrekare   Int
+  odaSayisi   String?  // "3+1", "2+1" vb.
+  banyo       Int?
+  kat         Int?
+  toplamKat   Int?
+  isitma      String?
+  bina_yasi   Int?
+  lat         Float?
+  lng         Float?
+  aktif       Boolean  @default(true)
+  one_cikan   Boolean  @default(false)
+  goruntuleme Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  resimler    Resim[]
+  ozellikler  IlanOzellik[]
+}
+
+model Resim {
+  id        String   @id @default(cuid())
+  url       String
+  ilanId    String
+  ilan      Ilan     @relation(fields: [ilanId], references: [id], onDelete: Cascade)
+  sira      Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model IlanOzellik {
+  id     String @id @default(cuid())
+  ad     String
+  ilanId String
+  ilan   Ilan   @relation(fields: [ilanId], references: [id], onDelete: Cascade)
+}
+
+model Mesaj {
+  id        String   @id @default(cuid())
+  ad        String
+  email     String
+  telefon   String?
+  konu      String
+  mesaj     String
+  okundu    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
