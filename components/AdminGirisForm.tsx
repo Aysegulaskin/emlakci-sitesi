@@ -20,6 +20,7 @@ export default function AdminGirisForm() {
       redirect: false,
       email,
       password,
+      callbackUrl: "/admin",
     });
 
     setIsLoading(false);

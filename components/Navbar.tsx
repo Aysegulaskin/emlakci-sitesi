@@ -2,10 +2,13 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Menu, X, Home, Search, Heart, Mail, Phone } from "lucide-react";
+import { useSession, signOut } from "next-auth/react";
+import { Menu, X, Home, Search, Heart, Mail, Phone, User, LogOut, LogIn } from "lucide-react";
 
 export default function Navbar() {
   const [menuAcik, setMenuAcik] = useState(false);
+  const { data: session } = useSession();
+  const isAdmin = (session?.user as { role?: string })?.role === "ADMIN";
 
   return (
     <header className="bg-white shadow-sm sticky top-0 z-50">
@@ -38,57 +41,50 @@ export default function Navbar() {
 
           {/* Desktop menü */}
           <div className="hidden md:flex items-center gap-8">
-            <Link
-              href="/"
-              className="text-gray-600 hover:text-blue-700 font-medium transition-colors"
-            >
-              Ana Sayfa
-            </Link>
-            <Link
-              href="/ilanlar?tip=SATILIK"
-              className="text-gray-600 hover:text-blue-700 font-medium transition-colors"
-            >
-              Satılık
-            </Link>
-            <Link
-              href="/ilanlar?tip=KIRALIK"
-              className="text-gray-600 hover:text-blue-700 font-medium transition-colors"
-            >
-              Kiralık
-            </Link>
-            <Link
-              href="/ilanlar"
-              className="text-gray-600 hover:text-blue-700 font-medium transition-colors"
-            >
-              Tüm İlanlar
-            </Link>
-            <Link
-              href="/iletisim"
-              className="text-gray-600 hover:text-blue-700 font-medium transition-colors"
-            >
-              İletişim
-            </Link>
-            <Link
-              href="/admin"
-              className="text-gray-600 hover:text-blue-700 font-medium transition-colors"
-            >
-              Admin
-            </Link>
+            <Link href="/" className="text-gray-600 hover:text-blue-700 font-medium transition-colors">Ana Sayfa</Link>
+            <Link href="/ilanlar?tip=SATILIK" className="text-gray-600 hover:text-blue-700 font-medium transition-colors">Satılık</Link>
+            <Link href="/ilanlar?tip=KIRALIK" className="text-gray-600 hover:text-blue-700 font-medium transition-colors">Kiralık</Link>
+            <Link href="/ilanlar" className="text-gray-600 hover:text-blue-700 font-medium transition-colors">Tüm İlanlar</Link>
+            <Link href="/iletisim" className="text-gray-600 hover:text-blue-700 font-medium transition-colors">İletişim</Link>
+            {isAdmin && (
+              <Link href="/admin" className="text-gray-600 hover:text-blue-700 font-medium transition-colors">Admin</Link>
+            )}
           </div>
 
           {/* Sağ butonlar */}
-          <div className="hidden md:flex items-center gap-3">
-            <Link
-              href="/favoriler"
-              className="flex items-center gap-1.5 text-gray-600 hover:text-red-500 font-medium transition-colors"
-            >
+          <div className="hidden md:flex items-center gap-2">
+            <Link href="/favoriler" className="flex items-center gap-1.5 text-gray-600 hover:text-red-500 font-medium transition-colors px-3 py-2">
               <Heart className="w-4 h-4" />
               Favoriler
             </Link>
-            <Link
-              href="/ilanlar"
-              className="flex items-center gap-1.5 bg-blue-700 text-white px-4 py-2 rounded-lg hover:bg-blue-800 font-medium transition-colors"
-            >
+
+            {session ? (
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600 flex items-center gap-1.5">
+                  <User className="w-4 h-4" />
+                  {session.user?.name?.split(" ")[0]}
+                </span>
+                <button
+                  onClick={() => signOut({ callbackUrl: "/" })}
+                  className="flex items-center gap-1.5 text-gray-600 hover:text-red-600 font-medium transition-colors px-3 py-2"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Çıkış
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Link href="/giris" className="flex items-center gap-1.5 text-gray-600 hover:text-blue-700 font-medium transition-colors px-3 py-2">
+                  <LogIn className="w-4 h-4" />
+                  Giriş
+                </Link>
+                <Link href="/kayit" className="flex items-center gap-1.5 bg-blue-700 text-white px-4 py-2 rounded-lg hover:bg-blue-800 font-medium transition-colors">
+                  Kayıt Ol
+                </Link>
+              </div>
+            )}
+
+            <Link href="/ilanlar" className="flex items-center gap-1.5 border border-blue-700 text-blue-700 px-4 py-2 rounded-lg hover:bg-blue-50 font-medium transition-colors">
               <Search className="w-4 h-4" />
               İlan Ara
             </Link>
@@ -106,27 +102,26 @@ export default function Navbar() {
         {/* Mobil menü */}
         {menuAcik && (
           <div className="md:hidden mt-4 pb-4 border-t pt-4 flex flex-col gap-4">
-            <Link href="/" className="text-gray-700 font-medium" onClick={() => setMenuAcik(false)}>
-              Ana Sayfa
-            </Link>
-            <Link href="/ilanlar?tip=SATILIK" className="text-gray-700 font-medium" onClick={() => setMenuAcik(false)}>
-              Satılık
-            </Link>
-            <Link href="/ilanlar?tip=KIRALIK" className="text-gray-700 font-medium" onClick={() => setMenuAcik(false)}>
-              Kiralık
-            </Link>
-            <Link href="/ilanlar" className="text-gray-700 font-medium" onClick={() => setMenuAcik(false)}>
-              Tüm İlanlar
-            </Link>
-            <Link href="/favoriler" className="text-gray-700 font-medium" onClick={() => setMenuAcik(false)}>
-              Favoriler
-            </Link>
-            <Link href="/iletisim" className="text-gray-700 font-medium" onClick={() => setMenuAcik(false)}>
-              İletişim
-            </Link>
-            <Link href="/admin" className="text-gray-700 font-medium" onClick={() => setMenuAcik(false)}>
-              Admin
-            </Link>
+            <Link href="/" className="text-gray-700 font-medium" onClick={() => setMenuAcik(false)}>Ana Sayfa</Link>
+            <Link href="/ilanlar?tip=SATILIK" className="text-gray-700 font-medium" onClick={() => setMenuAcik(false)}>Satılık</Link>
+            <Link href="/ilanlar?tip=KIRALIK" className="text-gray-700 font-medium" onClick={() => setMenuAcik(false)}>Kiralık</Link>
+            <Link href="/ilanlar" className="text-gray-700 font-medium" onClick={() => setMenuAcik(false)}>Tüm İlanlar</Link>
+            <Link href="/favoriler" className="text-gray-700 font-medium" onClick={() => setMenuAcik(false)}>Favoriler</Link>
+            <Link href="/iletisim" className="text-gray-700 font-medium" onClick={() => setMenuAcik(false)}>İletişim</Link>
+            {isAdmin && <Link href="/admin" className="text-gray-700 font-medium" onClick={() => setMenuAcik(false)}>Admin</Link>}
+            {session ? (
+              <button
+                onClick={() => { setMenuAcik(false); signOut({ callbackUrl: "/" }); }}
+                className="text-left text-red-600 font-medium"
+              >
+                Çıkış Yap ({session.user?.name})
+              </button>
+            ) : (
+              <>
+                <Link href="/giris" className="text-gray-700 font-medium" onClick={() => setMenuAcik(false)}>Giriş Yap</Link>
+                <Link href="/kayit" className="text-gray-700 font-medium" onClick={() => setMenuAcik(false)}>Kayıt Ol</Link>
+              </>
+            )}
           </div>
         )}
       </nav>
